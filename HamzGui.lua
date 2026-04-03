@@ -5,7 +5,6 @@ local UIS = game:GetService("UserInputService")
 
 local IMAGE_ID = "rbxassetid://7733658504"
 
--- ==================== LOADING ====================
 local LoadingGui = Instance.new("ScreenGui", game.CoreGui)
 LoadingGui.IgnoreGuiInset = true
 
@@ -47,7 +46,6 @@ for i = 1,100 do
     task.wait(0.02)
 end
 
--- FIX UTAMA: Pisah tween Frame & TextLabel
 TweenService:Create(BG, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
 
 for _,v in pairs(BG:GetDescendants()) do
@@ -61,7 +59,6 @@ end
 task.wait(0.6)
 LoadingGui:Destroy()
 
--- ==================== MAIN GUI ====================
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 ScreenGui.Name = "HamzHub"
 
@@ -76,7 +73,6 @@ local stroke = Instance.new("UIStroke", Main)
 stroke.Color = Color3.fromRGB(0,255,120)
 stroke.Transparency = 0.4
 
--- TOP
 local Top = Instance.new("Frame", Main)
 Top.Size = UDim2.new(1,0,0,30)
 Top.BackgroundTransparency = 1
@@ -96,14 +92,12 @@ MinBtn.Position = UDim2.new(1,-30,0,0)
 MinBtn.Text = ""
 MinBtn.BackgroundTransparency = 1
 
--- LINE
 local TopLine = Instance.new("Frame", Main)
 TopLine.Size = UDim2.new(1,-20,0,1)
 TopLine.Position = UDim2.new(0,10,0,30)
 TopLine.BackgroundColor3 = Color3.fromRGB(0,255,120)
 TopLine.BackgroundTransparency = 0.6
 
--- SIDEBAR
 local Sidebar = Instance.new("Frame", Main)
 Sidebar.Size = UDim2.new(0,120,1,-31)
 Sidebar.Position = UDim2.new(0,0,0,31)
@@ -126,7 +120,6 @@ Content.Size = UDim2.new(1,-121,1,-31)
 Content.Position = UDim2.new(0,121,0,31)
 Content.BackgroundTransparency = 1
 
--- ==================== CREATE TAB (AUTO POSISI) ====================
 local tabY = 10
 
 local function createTab(name)
@@ -157,15 +150,12 @@ local function createTab(name)
     return Frame
 end
 
--- Buat tab default
 local PlayerTab = createTab("Player")
 local MainTab = createTab("Main")
 PlayerTab.Visible = true
 
--- Accent mulai di tab pertama
 Accent.Position = UDim2.new(0,0,0,10)
 
--- Contoh button (bisa lo hapus nanti)
 local TestBtn = Instance.new("TextButton", MainTab)
 TestBtn.Size = UDim2.new(0,180,0,35)
 TestBtn.Position = UDim2.new(0,20,0,20)
@@ -178,7 +168,6 @@ TestBtn.MouseButton1Click:Connect(function()
     print("WORKING")
 end)
 
--- ==================== MINI ICON & DRAG ====================
 local MiniIcon = Instance.new("ImageButton", ScreenGui)
 MiniIcon.Size = UDim2.new(0,45,0,45)
 MiniIcon.Position = UDim2.new(0,20,0.5,0)
@@ -228,7 +217,6 @@ end)
 makeDraggable(Main, Top)
 makeDraggable(MiniIcon, MiniIcon)
 
--- ==================== RETURN LIBRARY ====================
 HamzHub.PlayerTab = PlayerTab
 HamzHub.MainTab = MainTab
 HamzHub.CreateTab = createTab
