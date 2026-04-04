@@ -17,10 +17,7 @@ loadingFrame.Parent = screenGui
 loadingFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 loadingFrame.Size = UDim2.new(1, 0, 1, 0)
 loadingFrame.Position = UDim2.new(0, 0, 0, 0)
-
-local loadingCorner = Instance.new("UICorner")
-loadingCorner.CornerRadius = UDim.new(0, 16)
-loadingCorner.Parent = loadingFrame
+loadingFrame.ZIndex = 1000
 
 local loadingTitle = Instance.new("TextLabel")
 loadingTitle.Parent = loadingFrame
@@ -82,6 +79,99 @@ task.spawn(function()
 end)
 
 local function createMainGUI()
+    local hamzPanel = Instance.new("Frame")
+    hamzPanel.Name = "HamzPanel"
+    hamzPanel.Parent = screenGui
+    hamzPanel.BackgroundColor3 = Color3.fromRGB(0, 130, 75)
+    hamzPanel.Position = UDim2.new(0.5, -160, 0.08, 0)
+    hamzPanel.Size = UDim2.new(0, 320, 0, 190)
+    hamzPanel.Visible = false
+    local pCorner = Instance.new("UICorner")
+    pCorner.CornerRadius = UDim.new(0, 16)
+    pCorner.Parent = hamzPanel
+    local pStroke = Instance.new("UIStroke")
+    pStroke.Color = Color3.fromRGB(255, 255, 255)
+    pStroke.Thickness = 2
+    pStroke.Parent = hamzPanel
+
+    local logo = Instance.new("Frame")
+    logo.Parent = hamzPanel
+    logo.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    logo.Position = UDim2.new(0, 18, 0, 14)
+    logo.Size = UDim2.new(0, 42, 0, 42)
+    local lCorner = Instance.new("UICorner")
+    lCorner.CornerRadius = UDim.new(0, 10)
+    lCorner.Parent = logo
+    local lText = Instance.new("TextLabel")
+    lText.Parent = logo
+    lText.BackgroundTransparency = 1
+    lText.Size = UDim2.new(1, 0, 1, 0)
+    lText.Font = Enum.Font.GothamBold
+    lText.Text = "H"
+    lText.TextColor3 = Color3.fromRGB(0, 255, 100)
+    lText.TextSize = 30
+
+    local titlePanel = Instance.new("TextLabel")
+    titlePanel.Parent = hamzPanel
+    titlePanel.BackgroundTransparency = 1
+    titlePanel.Position = UDim2.new(0, 72, 0, 17)
+    titlePanel.Size = UDim2.new(1, -100, 0, 32)
+    titlePanel.Font = Enum.Font.GothamBold
+    titlePanel.Text = "HAMZ MONITOR KETUA"
+    titlePanel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titlePanel.TextSize = 19
+    titlePanel.TextXAlignment = Enum.TextXAlignment.Left
+
+    local autoText = Instance.new("TextLabel")
+    autoText.Parent = hamzPanel
+    autoText.BackgroundTransparency = 0.8
+    autoText.Position = UDim2.new(0, 22, 0, 52)
+    autoText.Size = UDim2.new(1, -44, 0, 52)
+    autoText.Font = Enum.Font.GothamBlack
+    autoText.Text = "AUTO"
+    autoText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    autoText.TextSize = 54
+    autoText.TextTransparency = 0.7
+
+    local pingLbl = Instance.new("TextLabel")
+    pingLbl.Parent = hamzPanel
+    pingLbl.BackgroundTransparency = 1
+    pingLbl.Position = UDim2.new(0, 28, 0, 112)
+    pingLbl.Size = UDim2.new(0.48, 0, 0, 28)
+    pingLbl.Font = Enum.Font.Gotham
+    pingLbl.Text = "Ping: 56 ms"
+    pingLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    pingLbl.TextSize = 19
+    pingLbl.TextXAlignment = Enum.TextXAlignment.Left
+
+    local fpsLbl = Instance.new("TextLabel")
+    fpsLbl.Parent = hamzPanel
+    fpsLbl.BackgroundTransparency = 1
+    fpsLbl.Position = UDim2.new(0.5, 8, 0, 112)
+    fpsLbl.Size = UDim2.new(0.48, 0, 0, 28)
+    fpsLbl.Font = Enum.Font.Gotham
+    fpsLbl.Text = "FPS: 62"
+    fpsLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    fpsLbl.TextSize = 19
+    fpsLbl.TextXAlignment = Enum.TextXAlignment.Right
+
+    local divider = Instance.new("Frame")
+    divider.Parent = hamzPanel
+    divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    divider.Position = UDim2.new(0.5, 0, 0, 114)
+    divider.Size = UDim2.new(0, 2, 0, 24)
+
+    local notifLbl = Instance.new("TextLabel")
+    notifLbl.Parent = hamzPanel
+    notifLbl.BackgroundTransparency = 1
+    notifLbl.Position = UDim2.new(0, 26, 0, 148)
+    notifLbl.Size = UDim2.new(1, -52, 0, 28)
+    notifLbl.Font = Enum.Font.Gotham
+    notifLbl.Text = "Notifications: 8"
+    notifLbl.TextColor3 = Color3.fromRGB(255, 230, 0)
+    notifLbl.TextSize = 19
+    notifLbl.TextXAlignment = Enum.TextXAlignment.Center
+
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Parent = screenGui
@@ -262,7 +352,6 @@ local function createMainGUI()
 
     local isMinimized = false
     local originalSize = mainFrame.Size
-    local originalPosition = mainFrame.Position
 
     minimizeBtn.MouseButton1Click:Connect(function()
         isMinimized = not isMinimized
@@ -293,99 +382,6 @@ local function createMainGUI()
             screenGui:Destroy()
         end)
     end)
-
-    local hamzPanel = Instance.new("Frame")
-    hamzPanel.Name = "HamzPanel"
-    hamzPanel.Parent = screenGui
-    hamzPanel.BackgroundColor3 = Color3.fromRGB(0, 130, 75)
-    hamzPanel.Position = UDim2.new(0.5, -160, 0.08, 0)
-    hamzPanel.Size = UDim2.new(0, 320, 0, 190)
-    hamzPanel.Visible = false
-    local pCorner = Instance.new("UICorner")
-    pCorner.CornerRadius = UDim.new(0, 16)
-    pCorner.Parent = hamzPanel
-    local pStroke = Instance.new("UIStroke")
-    pStroke.Color = Color3.fromRGB(255, 255, 255)
-    pStroke.Thickness = 2
-    pStroke.Parent = hamzPanel
-
-    local logo = Instance.new("Frame")
-    logo.Parent = hamzPanel
-    logo.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    logo.Position = UDim2.new(0, 18, 0, 14)
-    logo.Size = UDim2.new(0, 42, 0, 42)
-    local lCorner = Instance.new("UICorner")
-    lCorner.CornerRadius = UDim.new(0, 10)
-    lCorner.Parent = logo
-    local lText = Instance.new("TextLabel")
-    lText.Parent = logo
-    lText.BackgroundTransparency = 1
-    lText.Size = UDim2.new(1, 0, 1, 0)
-    lText.Font = Enum.Font.GothamBold
-    lText.Text = "H"
-    lText.TextColor3 = Color3.fromRGB(0, 255, 100)
-    lText.TextSize = 30
-
-    local titlePanel = Instance.new("TextLabel")
-    titlePanel.Parent = hamzPanel
-    titlePanel.BackgroundTransparency = 1
-    titlePanel.Position = UDim2.new(0, 72, 0, 17)
-    titlePanel.Size = UDim2.new(1, -100, 0, 32)
-    titlePanel.Font = Enum.Font.GothamBold
-    titlePanel.Text = "HAMZ MONITOR KETUA"
-    titlePanel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titlePanel.TextSize = 19
-    titlePanel.TextXAlignment = Enum.TextXAlignment.Left
-
-    local autoText = Instance.new("TextLabel")
-    autoText.Parent = hamzPanel
-    autoText.BackgroundTransparency = 0.8
-    autoText.Position = UDim2.new(0, 22, 0, 52)
-    autoText.Size = UDim2.new(1, -44, 0, 52)
-    autoText.Font = Enum.Font.GothamBlack
-    autoText.Text = "AUTO"
-    autoText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    autoText.TextSize = 54
-    autoText.TextTransparency = 0.7
-
-    local pingLbl = Instance.new("TextLabel")
-    pingLbl.Parent = hamzPanel
-    pingLbl.BackgroundTransparency = 1
-    pingLbl.Position = UDim2.new(0, 28, 0, 112)
-    pingLbl.Size = UDim2.new(0.48, 0, 0, 28)
-    pingLbl.Font = Enum.Font.Gotham
-    pingLbl.Text = "Ping: 56 ms"
-    pingLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    pingLbl.TextSize = 19
-    pingLbl.TextXAlignment = Enum.TextXAlignment.Left
-
-    local fpsLbl = Instance.new("TextLabel")
-    fpsLbl.Parent = hamzPanel
-    fpsLbl.BackgroundTransparency = 1
-    fpsLbl.Position = UDim2.new(0.5, 8, 0, 112)
-    fpsLbl.Size = UDim2.new(0.48, 0, 0, 28)
-    fpsLbl.Font = Enum.Font.Gotham
-    fpsLbl.Text = "FPS: 62"
-    fpsLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    fpsLbl.TextSize = 19
-    fpsLbl.TextXAlignment = Enum.TextXAlignment.Right
-
-    local divider = Instance.new("Frame")
-    divider.Parent = hamzPanel
-    divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    divider.Position = UDim2.new(0.5, 0, 0, 114)
-    divider.Size = UDim2.new(0, 2, 0, 24)
-
-    local notifLbl = Instance.new("TextLabel")
-    notifLbl.Parent = hamzPanel
-    notifLbl.BackgroundTransparency = 1
-    notifLbl.Position = UDim2.new(0, 26, 0, 148)
-    notifLbl.Size = UDim2.new(1, -52, 0, 28)
-    notifLbl.Font = Enum.Font.Gotham
-    notifLbl.Text = "Notifications: 8"
-    notifLbl.TextColor3 = Color3.fromRGB(255, 230, 0)
-    notifLbl.TextSize = 19
-    notifLbl.TextXAlignment = Enum.TextXAlignment.Center
 
     local fpsCount = 0
     local lastTime = tick()
