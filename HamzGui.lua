@@ -1,408 +1,432 @@
--- =============================================
--- HamzHub GUI - Custom by Grok (100% mirip request lu)
--- Warna hijau, 2 tab, HamzPanel dengan FPS+Ping real
--- =============================================
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local Stats = game:GetService("Stats")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
+local Stats = game:GetService("Stats")
 
 local player = Players.LocalPlayer
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "HamzHub"
 screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui") -- ganti ke CoreGui kalau executor lu butuh
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- ================== MAIN FRAME ==================
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Parent = screenGui
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-mainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
-mainFrame.Size = UDim2.new(0, 600, 0, 400)
-local mainCorner = Instance.new("UICorner"); mainCorner.CornerRadius = UDim.new(0, 10); mainCorner.Parent = mainFrame
-local mainStroke = Instance.new("UIStroke"); mainStroke.Color = Color3.fromRGB(0, 255, 100); mainStroke.Thickness = 1.5; mainStroke.Parent = mainFrame
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Name = "LoadingScreen"
+loadingFrame.Parent = screenGui
+loadingFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+loadingFrame.Size = UDim2.new(1, 0, 1, 0)
+loadingFrame.Position = UDim2.new(0, 0, 0, 0)
 
--- Top Bar
-local topBar = Instance.new("Frame")
-topBar.Name = "TopBar"
-topBar.Parent = mainFrame
-topBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-topBar.Size = UDim2.new(1, 0, 0, 50)
-local topCorner = Instance.new("UICorner"); topCorner.CornerRadius = UDim.new(0, 10); topCorner.Parent = topBar
+local loadingCorner = Instance.new("UICorner")
+loadingCorner.CornerRadius = UDim.new(0, 16)
+loadingCorner.Parent = loadingFrame
 
-local title = Instance.new("TextLabel")
-title.Parent = topBar
-title.BackgroundTransparency = 1
-title.Position = UDim2.new(0, 20, 0, 0)
-title.Size = UDim2.new(0, 200, 1, 0)
-title.Font = Enum.Font.GothamBold
-title.Text = "HamzHub"
-title.TextColor3 = Color3.fromRGB(0, 255, 100)
-title.TextSize = 22
-title.TextXAlignment = Enum.TextXAlignment.Left
+local loadingTitle = Instance.new("TextLabel")
+loadingTitle.Parent = loadingFrame
+loadingTitle.BackgroundTransparency = 1
+loadingTitle.Position = UDim2.new(0.5, -250, 0.4, -40)
+loadingTitle.Size = UDim2.new(0, 500, 0, 80)
+loadingTitle.Font = Enum.Font.GothamBold
+loadingTitle.Text = "HamzHub Is Loading"
+loadingTitle.TextColor3 = Color3.fromRGB(0, 255, 100)
+loadingTitle.TextSize = 32
+loadingTitle.TextStrokeTransparency = 0.8
 
--- Icon kecil (mirip Lynx)
-local icon = Instance.new("Frame")
-icon.Parent = topBar
-icon.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-icon.Position = UDim2.new(0, 160, 0.5, -10)
-icon.Size = UDim2.new(0, 20, 0, 20)
-local iconCorner = Instance.new("UICorner"); iconCorner.CornerRadius = UDim.new(1, 0); iconCorner.Parent = icon
+local progressOuter = Instance.new("Frame")
+progressOuter.Parent = loadingFrame
+progressOuter.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+progressOuter.Position = UDim2.new(0.5, -250, 0.6, 0)
+progressOuter.Size = UDim2.new(0, 500, 0, 12)
+local outerCorner = Instance.new("UICorner")
+outerCorner.CornerRadius = UDim.new(1, 0)
+outerCorner.Parent = progressOuter
 
--- Close Button
-local closeBtn = Instance.new("TextButton")
-closeBtn.Parent = topBar
-closeBtn.BackgroundTransparency = 1
-closeBtn.Position = UDim2.new(1, -40, 0.5, -15)
-closeBtn.Size = UDim2.new(0, 30, 0, 30)
-closeBtn.Font = Enum.Font.GothamBold
-closeBtn.Text = "×"
-closeBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
-closeBtn.TextSize = 28
-closeBtn.MouseButton1Click:Connect(function() screenGui:Destroy() end)
+local progressInner = Instance.new("Frame")
+progressInner.Parent = progressOuter
+progressInner.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+progressInner.Size = UDim2.new(0, 0, 1, 0)
+local innerCorner = Instance.new("UICorner")
+innerCorner.CornerRadius = UDim.new(1, 0)
+innerCorner.Parent = progressInner
 
--- Draggable
-local dragging, dragInput, dragStart, startPos
-topBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = mainFrame.Position
-        input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
-    end
-end)
-topBar.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end
-end)
-UserInputService.InputChanged:Connect(function(input)
-    if dragging and input == dragInput then
-        local delta = input.Position - dragStart
-        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
+local progressText = Instance.new("TextLabel")
+progressText.Parent = loadingFrame
+progressText.BackgroundTransparency = 1
+progressText.Position = UDim2.new(0.5, -250, 0.65, 10)
+progressText.Size = UDim2.new(0, 500, 0, 30)
+progressText.Font = Enum.Font.Gotham
+progressText.Text = "0%"
+progressText.TextColor3 = Color3.fromRGB(220, 220, 220)
+progressText.TextSize = 18
 
--- ================== SIDEBAR (2 TAB ONLY) ==================
-local sidebar = Instance.new("Frame")
-sidebar.Parent = mainFrame
-sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-sidebar.Position = UDim2.new(0, 0, 0, 50)
-sidebar.Size = UDim2.new(0, 160, 1, -50)
-local sidebarCorner = Instance.new("UICorner"); sidebarCorner.CornerRadius = UDim.new(0, 10); sidebarCorner.Parent = sidebar
-
-local function createTabButton(name, yPos)
-    local btn = Instance.new("TextButton")
-    btn.Parent = sidebar
-    btn.BackgroundTransparency = 1
-    btn.Position = UDim2.new(0, 15, 0, yPos)
-    btn.Size = UDim2.new(1, -30, 0, 50)
-    btn.Font = Enum.Font.GothamSemibold
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(220, 220, 220)
-    btn.TextSize = 18
-    btn.TextXAlignment = Enum.TextXAlignment.Left
-    
-    local iconLbl = Instance.new("TextLabel")
-    iconLbl.Parent = btn
-    iconLbl.BackgroundTransparency = 1
-    iconLbl.Size = UDim2.new(0, 30, 1, 0)
-    iconLbl.Font = Enum.Font.GothamBold
-    iconLbl.Text = name == "Main" and "🏠" or "⚙️"
-    iconLbl.TextColor3 = Color3.fromRGB(0, 255, 100)
-    iconLbl.TextSize = 24
-    return btn
-end
-
-local mainTabBtn = createTabButton("Main", 20)
-local miscTabBtn = createTabButton("Misc", 80)
-
--- ================== CONTENT AREA ==================
-local content = Instance.new("Frame")
-content.Parent = mainFrame
-content.BackgroundTransparency = 1
-content.Position = UDim2.new(0, 170, 0, 60)
-content.Size = UDim2.new(1, -180, 1, -80)
-
-local contentList = Instance.new("UIListLayout")
-contentList.Parent = content
-contentList.SortOrder = Enum.SortOrder.LayoutOrder
-contentList.Padding = UDim.new(0, 8)
-
-local function clearContent()
-    for _, child in ipairs(content:GetChildren()) do
-        if child:IsA("Frame") or child:IsA("TextLabel") then
-            child:Destroy()
-        end
-    end
-end
-
--- Toggle Creator
-local function createToggle(text, defaultOn, parent, callback)
-    local toggleFrame = Instance.new("Frame")
-    toggleFrame.Parent = parent
-    toggleFrame.BackgroundTransparency = 1
-    toggleFrame.Size = UDim2.new(1, 0, 0, 45)
-    
-    local label = Instance.new("TextLabel")
-    label.Parent = toggleFrame
-    label.BackgroundTransparency = 1
-    label.Size = UDim2.new(0.65, 0, 1, 0)
-    label.Font = Enum.Font.Gotham
-    label.Text = text
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 17
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    
-    local switch = Instance.new("Frame")
-    switch.Parent = toggleFrame
-    switch.BackgroundColor3 = defaultOn and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(80, 80, 80)
-    switch.Position = UDim2.new(0.7, 0, 0.5, -10)
-    switch.Size = UDim2.new(0, 52, 0, 20)
-    local switchCorner = Instance.new("UICorner"); switchCorner.CornerRadius = UDim.new(1, 0); switchCorner.Parent = switch
-    
-    local knob = Instance.new("Frame")
-    knob.Parent = switch
-    knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    knob.Position = defaultOn and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
-    knob.Size = UDim2.new(0, 16, 0, 16)
-    local knobCorner = Instance.new("UICorner"); knobCorner.CornerRadius = UDim.new(1, 0); knobCorner.Parent = knob
-    
-    local toggled = defaultOn
-    
-    local function updateVisual()
-        if toggled then
-            switch.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-            TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {Position = UDim2.new(1, -18, 0.5, -8)}):Play()
-        else
-            switch.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-            TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {Position = UDim2.new(0, 2, 0.5, -8)}):Play()
-        end
+task.spawn(function()
+    for i = 0, 100 do
+        progressInner:TweenSize(UDim2.new(i / 100, 0, 1, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.02, true)
+        progressText.Text = i .. "%"
+        task.wait(0.018)
     end
     
-    switch.MouseButton1Click:Connect(function()
-        toggled = not toggled
-        updateVisual()
-        if callback then callback(toggled) end
+    local fadeTween = TweenService:Create(loadingFrame, TweenInfo.new(0.6, Enum.EasingStyle.Quart), {BackgroundTransparency = 1})
+    local titleTween = TweenService:Create(loadingTitle, TweenInfo.new(0.6, Enum.EasingStyle.Quart), {TextTransparency = 1})
+    local progressTween = TweenService:Create(progressOuter, TweenInfo.new(0.6, Enum.EasingStyle.Quart), {BackgroundTransparency = 1})
+    fadeTween:Play()
+    titleTween:Play()
+    progressTween:Play()
+    progressInner.BackgroundTransparency = 1
+    
+    fadeTween.Completed:Connect(function()
+        loadingFrame:Destroy()
+        createMainGUI()
     end)
-    
-    updateVisual()
-    return toggleFrame
-end
+end)
 
--- ================== LOAD TAB FUNCTIONS ==================
-local currentTab = "Main"
+local function createMainGUI()
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Name = "MainFrame"
+    mainFrame.Parent = screenGui
+    mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+    mainFrame.Position = UDim2.new(0.5, -260, 0.5, -210)
+    mainFrame.Size = UDim2.new(0, 520, 0, 420)
+    local mainCorner = Instance.new("UICorner")
+    mainCorner.CornerRadius = UDim.new(0, 14)
+    mainCorner.Parent = mainFrame
+    local mainStroke = Instance.new("UIStroke")
+    mainStroke.Color = Color3.fromRGB(0, 255, 100)
+    mainStroke.Thickness = 1.8
+    mainStroke.Parent = mainFrame
 
-local function loadMainTab()
-    clearContent()
-    currentTab = "Main"
-    
-    local titleMain = Instance.new("TextLabel")
-    titleMain.Parent = content
-    titleMain.BackgroundTransparency = 1
-    titleMain.Size = UDim2.new(1, 0, 0, 35)
-    titleMain.Font = Enum.Font.GothamBold
-    titleMain.Text = "Main"
-    titleMain.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleMain.TextSize = 22
-    titleMain.TextXAlignment = Enum.TextXAlignment.Left
-    
-    Instance.new("TextLabel").Parent = content -- Ini Blatant kayaknya
-    local blatant = content:FindFirstChildWhichIsA("TextLabel", true) or Instance.new("TextLabel")
-    blatant.Text = "Ini Blatant kayaknya"
-    blatant.TextColor3 = Color3.fromRGB(255, 255, 255)
-    blatant.TextSize = 17
-    blatant.Size = UDim2.new(1, 0, 0, 30)
-    blatant.BackgroundTransparency = 1
-    blatant.TextXAlignment = Enum.TextXAlignment.Left
-    
-    -- Complete Delay
-    local delayFrame = Instance.new("Frame")
-    delayFrame.Parent = content
-    delayFrame.BackgroundTransparency = 1
-    delayFrame.Size = UDim2.new(1, 0, 0, 30)
-    local delayLbl = Instance.new("TextLabel")
-    delayLbl.Parent = delayFrame
-    delayLbl.BackgroundTransparency = 1
-    delayLbl.Size = UDim2.new(0.65, 0, 1, 0)
-    delayLbl.Text = "Complete Delay"
-    delayLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    delayLbl.TextSize = 17
-    delayLbl.TextXAlignment = Enum.TextXAlignment.Left
-    local delayVal = Instance.new("TextLabel")
-    delayVal.Parent = delayFrame
-    delayVal.BackgroundTransparency = 1
-    delayVal.Position = UDim2.new(0.65, 0, 0, 0)
-    delayVal.Size = UDim2.new(0.35, 0, 1, 0)
-    delayVal.Text = "0.4S"
-    delayVal.TextColor3 = Color3.fromRGB(0, 255, 100)
-    delayVal.TextSize = 17
-    delayVal.TextXAlignment = Enum.TextXAlignment.Right
-    
-    createToggle("Enable Ultra Blatant", true, content) -- default ON seperti foto
-    
-    Instance.new("TextLabel").Parent = content -- Legit Fishing
-    local legit = content:FindFirstChildWhichIsA("TextLabel", true) or Instance.new("TextLabel")
-    legit.Text = "Legit Fishing"
-    legit.TextColor3 = Color3.fromRGB(255, 255, 255)
-    legit.TextSize = 17
-    legit.Size = UDim2.new(1, 0, 0, 30)
-    legit.BackgroundTransparency = 1
-    legit.TextXAlignment = Enum.TextXAlignment.Left
-    
-    Instance.new("TextLabel").Parent = content -- Instant Fishing
-    local instant = content:FindFirstChildWhichIsA("TextLabel", true) or Instance.new("TextLabel")
-    instant.Text = "Instant Fishing"
-    instant.TextColor3 = Color3.fromRGB(255, 255, 255)
-    instant.TextSize = 17
-    instant.Size = UDim2.new(1, 0, 0, 30)
-    instant.BackgroundTransparency = 1
-    instant.TextXAlignment = Enum.TextXAlignment.Left
-end
+    local topBar = Instance.new("Frame")
+    topBar.Name = "TopBar"
+    topBar.Parent = mainFrame
+    topBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    topBar.Size = UDim2.new(1, 0, 0, 56)
+    local topCorner = Instance.new("UICorner")
+    topCorner.CornerRadius = UDim.new(0, 14)
+    topCorner.Parent = topBar
 
-local function loadMiscTab()
-    clearContent()
-    currentTab = "Misc"
-    
-    local titleMisc = Instance.new("TextLabel")
-    titleMisc.Parent = content
-    titleMisc.BackgroundTransparency = 1
-    titleMisc.Size = UDim2.new(1, 0, 0, 35)
-    titleMisc.Font = Enum.Font.GothamBold
-    titleMisc.Text = "Misc"
-    titleMisc.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleMisc.TextSize = 22
-    titleMisc.TextXAlignment = Enum.TextXAlignment.Left
-    
-    createToggle("Ultra FPS Booster", false, content)
-    createToggle("ESP", false, content)
-    createToggle("Anti AFK", false, content)
-    
-    -- Panel Toggle (spesial)
-    createToggle("Panel", false, content, function(state)
+    local title = Instance.new("TextLabel")
+    title.Parent = topBar
+    title.BackgroundTransparency = 1
+    title.Position = UDim2.new(0, 24, 0, 0)
+    title.Size = UDim2.new(0, 200, 1, 0)
+    title.Font = Enum.Font.GothamBold
+    title.Text = "HamzHub"
+    title.TextColor3 = Color3.fromRGB(0, 255, 100)
+    title.TextSize = 24
+    title.TextXAlignment = Enum.TextXAlignment.Left
+
+    local minimizeBtn = Instance.new("TextButton")
+    minimizeBtn.Parent = topBar
+    minimizeBtn.BackgroundTransparency = 1
+    minimizeBtn.Position = UDim2.new(1, -88, 0.5, -14)
+    minimizeBtn.Size = UDim2.new(0, 28, 0, 28)
+    minimizeBtn.Font = Enum.Font.GothamBold
+    minimizeBtn.Text = "−"
+    minimizeBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+    minimizeBtn.TextSize = 26
+
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Parent = topBar
+    closeBtn.BackgroundTransparency = 1
+    closeBtn.Position = UDim2.new(1, -46, 0.5, -14)
+    closeBtn.Size = UDim2.new(0, 28, 0, 28)
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.Text = "×"
+    closeBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
+    closeBtn.TextSize = 28
+
+    local content = Instance.new("ScrollingFrame")
+    content.Parent = mainFrame
+    content.BackgroundTransparency = 1
+    content.Position = UDim2.new(0, 24, 0, 72)
+    content.Size = UDim2.new(1, -48, 1, -88)
+    content.ScrollBarThickness = 4
+    content.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 100)
+    content.CanvasSize = UDim2.new(0, 0, 0, 240)
+
+    local contentList = Instance.new("UIListLayout")
+    contentList.Parent = content
+    contentList.SortOrder = Enum.SortOrder.LayoutOrder
+    contentList.Padding = UDim.new(0, 12)
+
+    local miscHeader = Instance.new("TextLabel")
+    miscHeader.Parent = content
+    miscHeader.BackgroundTransparency = 1
+    miscHeader.Size = UDim2.new(1, 0, 0, 38)
+    miscHeader.Font = Enum.Font.GothamBold
+    miscHeader.Text = "Misc"
+    miscHeader.TextColor3 = Color3.fromRGB(255, 255, 255)
+    miscHeader.TextSize = 26
+    miscHeader.TextXAlignment = Enum.TextXAlignment.Left
+
+    local function createToggle(text, defaultOn, callback)
+        local toggleFrame = Instance.new("Frame")
+        toggleFrame.Parent = content
+        toggleFrame.BackgroundTransparency = 1
+        toggleFrame.Size = UDim2.new(1, 0, 0, 52)
+
+        local label = Instance.new("TextLabel")
+        label.Parent = toggleFrame
+        label.BackgroundTransparency = 1
+        label.Size = UDim2.new(0.72, 0, 1, 0)
+        label.Font = Enum.Font.GothamSemibold
+        label.Text = text
+        label.TextColor3 = Color3.fromRGB(240, 240, 240)
+        label.TextSize = 18
+        label.TextXAlignment = Enum.TextXAlignment.Left
+
+        local switch = Instance.new("Frame")
+        switch.Parent = toggleFrame
+        switch.BackgroundColor3 = defaultOn and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 255, 255)
+        switch.Position = UDim2.new(0.78, 0, 0.5, -13)
+        switch.Size = UDim2.new(0, 62, 0, 26)
+        local switchCorner = Instance.new("UICorner")
+        switchCorner.CornerRadius = UDim.new(1, 0)
+        switchCorner.Parent = switch
+
+        local knob = Instance.new("Frame")
+        knob.Parent = switch
+        knob.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+        knob.Position = defaultOn and UDim2.new(1, -22, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
+        knob.Size = UDim2.new(0, 18, 0, 18)
+        local knobCorner = Instance.new("UICorner")
+        knobCorner.CornerRadius = UDim.new(1, 0)
+        knobCorner.Parent = knob
+
+        local toggled = defaultOn
+
+        local function updateVisual()
+            if toggled then
+                switch.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+                TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {Position = UDim2.new(1, -22, 0.5, -9)}):Play()
+            else
+                switch.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
+            end
+        end
+
+        switch.MouseButton1Click:Connect(function()
+            toggled = not toggled
+            updateVisual()
+            if callback then callback(toggled) end
+        end)
+
+        updateVisual()
+        return toggleFrame
+    end
+
+    createToggle("Ultra FPS Booster", false, function(state)
+        if state then
+            pcall(function()
+                Lighting.GlobalShadows = false
+                Lighting.FogEnd = 1000000
+                settings().Rendering.QualityLevel = 1
+            end)
+            print("✅ Ultra FPS Booster: ON")
+        else
+            pcall(function()
+                Lighting.GlobalShadows = true
+                Lighting.FogEnd = 100000
+            end)
+            print("❌ Ultra FPS Booster: OFF")
+        end
+    end)
+
+    createToggle("ESP", false, nil)
+    createToggle("Anti AFK", false, nil)
+
+    createToggle("Panel", false, function(state)
         hamzPanel.Visible = state
     end)
+
+    local dragging, dragInput, dragStart, startPos
+    topBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = mainFrame.Position
+        end
+    end)
+    topBar.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input == dragInput then
+            local delta = input.Position - dragStart
+            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    local isMinimized = false
+    local originalSize = mainFrame.Size
+    local originalPosition = mainFrame.Position
+
+    minimizeBtn.MouseButton1Click:Connect(function()
+        isMinimized = not isMinimized
+        if isMinimized then
+            minimizeBtn.Text = "＋"
+            TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart), {
+                Size = UDim2.new(0, 520, 0, 56)
+            }):Play()
+            content.Visible = false
+        else
+            minimizeBtn.Text = "−"
+            TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Quart), {
+                Size = originalSize
+            }):Play()
+            task.wait(0.2)
+            content.Visible = true
+        end
+    end)
+
+    closeBtn.MouseButton1Click:Connect(function()
+        local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+        local closeTween = TweenService:Create(mainFrame, tweenInfo, {
+            Size = UDim2.new(0, 0, 0, 0),
+            Position = UDim2.new(0.5, -10, 0.5, -10)
+        })
+        closeTween:Play()
+        closeTween.Completed:Connect(function()
+            screenGui:Destroy()
+        end)
+    end)
+
+    local hamzPanel = Instance.new("Frame")
+    hamzPanel.Name = "HamzPanel"
+    hamzPanel.Parent = screenGui
+    hamzPanel.BackgroundColor3 = Color3.fromRGB(0, 130, 75)
+    hamzPanel.Position = UDim2.new(0.5, -160, 0.08, 0)
+    hamzPanel.Size = UDim2.new(0, 320, 0, 190)
+    hamzPanel.Visible = false
+    local pCorner = Instance.new("UICorner")
+    pCorner.CornerRadius = UDim.new(0, 16)
+    pCorner.Parent = hamzPanel
+    local pStroke = Instance.new("UIStroke")
+    pStroke.Color = Color3.fromRGB(255, 255, 255)
+    pStroke.Thickness = 2
+    pStroke.Parent = hamzPanel
+
+    local logo = Instance.new("Frame")
+    logo.Parent = hamzPanel
+    logo.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    logo.Position = UDim2.new(0, 18, 0, 14)
+    logo.Size = UDim2.new(0, 42, 0, 42)
+    local lCorner = Instance.new("UICorner")
+    lCorner.CornerRadius = UDim.new(0, 10)
+    lCorner.Parent = logo
+    local lText = Instance.new("TextLabel")
+    lText.Parent = logo
+    lText.BackgroundTransparency = 1
+    lText.Size = UDim2.new(1, 0, 1, 0)
+    lText.Font = Enum.Font.GothamBold
+    lText.Text = "H"
+    lText.TextColor3 = Color3.fromRGB(0, 255, 100)
+    lText.TextSize = 30
+
+    local titlePanel = Instance.new("TextLabel")
+    titlePanel.Parent = hamzPanel
+    titlePanel.BackgroundTransparency = 1
+    titlePanel.Position = UDim2.new(0, 72, 0, 17)
+    titlePanel.Size = UDim2.new(1, -100, 0, 32)
+    titlePanel.Font = Enum.Font.GothamBold
+    titlePanel.Text = "HAMZ MONITOR KETUA"
+    titlePanel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titlePanel.TextSize = 19
+    titlePanel.TextXAlignment = Enum.TextXAlignment.Left
+
+    local autoText = Instance.new("TextLabel")
+    autoText.Parent = hamzPanel
+    autoText.BackgroundTransparency = 0.8
+    autoText.Position = UDim2.new(0, 22, 0, 52)
+    autoText.Size = UDim2.new(1, -44, 0, 52)
+    autoText.Font = Enum.Font.GothamBlack
+    autoText.Text = "AUTO"
+    autoText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    autoText.TextSize = 54
+    autoText.TextTransparency = 0.7
+
+    local pingLbl = Instance.new("TextLabel")
+    pingLbl.Parent = hamzPanel
+    pingLbl.BackgroundTransparency = 1
+    pingLbl.Position = UDim2.new(0, 28, 0, 112)
+    pingLbl.Size = UDim2.new(0.48, 0, 0, 28)
+    pingLbl.Font = Enum.Font.Gotham
+    pingLbl.Text = "Ping: 56 ms"
+    pingLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    pingLbl.TextSize = 19
+    pingLbl.TextXAlignment = Enum.TextXAlignment.Left
+
+    local fpsLbl = Instance.new("TextLabel")
+    fpsLbl.Parent = hamzPanel
+    fpsLbl.BackgroundTransparency = 1
+    fpsLbl.Position = UDim2.new(0.5, 8, 0, 112)
+    fpsLbl.Size = UDim2.new(0.48, 0, 0, 28)
+    fpsLbl.Font = Enum.Font.Gotham
+    fpsLbl.Text = "FPS: 62"
+    fpsLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    fpsLbl.TextSize = 19
+    fpsLbl.TextXAlignment = Enum.TextXAlignment.Right
+
+    local divider = Instance.new("Frame")
+    divider.Parent = hamzPanel
+    divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    divider.Position = UDim2.new(0.5, 0, 0, 114)
+    divider.Size = UDim2.new(0, 2, 0, 24)
+
+    local notifLbl = Instance.new("TextLabel")
+    notifLbl.Parent = hamzPanel
+    notifLbl.BackgroundTransparency = 1
+    notifLbl.Position = UDim2.new(0, 26, 0, 148)
+    notifLbl.Size = UDim2.new(1, -52, 0, 28)
+    notifLbl.Font = Enum.Font.Gotham
+    notifLbl.Text = "Notifications: 8"
+    notifLbl.TextColor3 = Color3.fromRGB(255, 230, 0)
+    notifLbl.TextSize = 19
+    notifLbl.TextXAlignment = Enum.TextXAlignment.Center
+
+    local fpsCount = 0
+    local lastTime = tick()
+
+    RunService.RenderStepped:Connect(function()
+        fpsCount += 1
+        if tick() - lastTime >= 1 then
+            fpsLbl.Text = "FPS: " .. fpsCount
+            fpsCount = 0
+            lastTime = tick()
+        end
+    end)
+
+    RunService.RenderStepped:Connect(function()
+        local ping = Stats.Network.ServerStatsItem:FindFirstChild("Ping")
+        if ping then
+            pingLbl.Text = "Ping: " .. math.floor(ping.Value) .. " ms"
+        else
+            pingLbl.Text = "Ping: -- ms"
+        end
+    end)
+
+    local panelDragging = false
+    titlePanel.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            panelDragging = true
+            local dragStartPos = input.Position
+            local startPanelPos = hamzPanel.Position
+            local conn
+            conn = UserInputService.InputChanged:Connect(function(inp)
+                if inp.UserInputType == Enum.UserInputType.MouseMovement and panelDragging then
+                    local delta = inp.Position - dragStartPos
+                    hamzPanel.Position = UDim2.new(startPanelPos.X.Scale, startPanelPos.X.Offset + delta.X, startPanelPos.Y.Scale, startPanelPos.Y.Offset + delta.Y)
+                end
+            end)
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    panelDragging = false
+                    conn:Disconnect()
+                end
+            end)
+        end
+    end)
 end
-
--- Tab Click
-mainTabBtn.MouseButton1Click:Connect(loadMainTab)
-miscTabBtn.MouseButton1Click:Connect(loadMiscTab)
-
--- ================== HAMZPANEL (GUI KECIL) ==================
-local hamzPanel = Instance.new("Frame")
-hamzPanel.Name = "HamzPanel"
-hamzPanel.Parent = screenGui
-hamzPanel.BackgroundColor3 = Color3.fromRGB(0, 140, 80) -- hijau sesuai request
-hamzPanel.Position = UDim2.new(0.5, -160, 0.1, 0)
-hamzPanel.Size = UDim2.new(0, 320, 0, 190)
-hamzPanel.Visible = false
-local pCorner = Instance.new("UICorner"); pCorner.CornerRadius = UDim.new(0, 14); pCorner.Parent = hamzPanel
-local pStroke = Instance.new("UIStroke"); pStroke.Color = Color3.fromRGB(255,255,255); pStroke.Thickness = 2; pStroke.Parent = hamzPanel
-
--- Logo kiri atas
-local logo = Instance.new("Frame")
-logo.Parent = hamzPanel
-logo.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-logo.Position = UDim2.new(0, 15, 0, 12)
-logo.Size = UDim2.new(0, 42, 0, 42)
-local lCorner = Instance.new("UICorner"); lCorner.CornerRadius = UDim.new(0, 8); lCorner.Parent = logo
-local lText = Instance.new("TextLabel")
-lText.Parent = logo
-lText.BackgroundTransparency = 1
-lText.Size = UDim2.new(1,0,1,0)
-lText.Font = Enum.Font.GothamBold
-lText.Text = "H"
-lText.TextColor3 = Color3.fromRGB(0, 255, 100)
-lText.TextSize = 28
-
--- Title
-local titlePanel = Instance.new("TextLabel")
-titlePanel.Parent = hamzPanel
-titlePanel.BackgroundTransparency = 1
-titlePanel.Position = UDim2.new(0, 70, 0, 15)
-titlePanel.Size = UDim2.new(1, -90, 0, 30)
-titlePanel.Font = Enum.Font.GothamBold
-titlePanel.Text = "HAMZ MONITOR KETUA"
-titlePanel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titlePanel.TextSize = 19
-
--- AUTO text (faint besar)
-local autoText = Instance.new("TextLabel")
-autoText.Parent = hamzPanel
-autoText.BackgroundTransparency = 0.85
-autoText.Position = UDim2.new(0, 20, 0, 45)
-autoText.Size = UDim2.new(1, -40, 0, 55)
-autoText.Font = Enum.Font.GothamBlack
-autoText.Text = "AUTO"
-autoText.TextColor3 = Color3.fromRGB(255, 255, 255)
-autoText.TextSize = 58
-autoText.TextTransparency = 0.65
-
--- Stats
-local pingLbl = Instance.new("TextLabel")
-pingLbl.Parent = hamzPanel
-pingLbl.BackgroundTransparency = 1
-pingLbl.Position = UDim2.new(0, 25, 0, 105)
-pingLbl.Size = UDim2.new(0.5, 0, 0, 30)
-pingLbl.Font = Enum.Font.Gotham
-pingLbl.Text = "Ping: 56 ms"
-pingLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-pingLbl.TextSize = 19
-pingLbl.TextXAlignment = Enum.TextXAlignment.Left
-
-local fpsLbl = Instance.new("TextLabel")
-fpsLbl.Parent = hamzPanel
-fpsLbl.BackgroundTransparency = 1
-fpsLbl.Position = UDim2.new(0.5, 5, 0, 105)
-fpsLbl.Size = UDim2.new(0.5, -30, 0, 30)
-fpsLbl.Font = Enum.Font.Gotham
-fpsLbl.Text = "FPS: 62"
-fpsLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-fpsLbl.TextSize = 19
-fpsLbl.TextXAlignment = Enum.TextXAlignment.Right
-
-local divider = Instance.new("Frame")
-divider.Parent = hamzPanel
-divider.BackgroundColor3 = Color3.fromRGB(255,255,255)
-divider.Position = UDim2.new(0.5, 0, 0, 108)
-divider.Size = UDim2.new(0, 2, 0, 24)
-
-local notifLbl = Instance.new("TextLabel")
-notifLbl.Parent = hamzPanel
-notifLbl.BackgroundTransparency = 1
-notifLbl.Position = UDim2.new(0, 25, 0, 145)
-notifLbl.Size = UDim2.new(1, -50, 0, 30)
-notifLbl.Font = Enum.Font.Gotham
-notifLbl.Text = "Notifications: 8"
-notifLbl.TextColor3 = Color3.fromRGB(255, 220, 0)
-notifLbl.TextSize = 19
-notifLbl.TextXAlignment = Enum.TextXAlignment.Center
-
--- ================== REAL FPS & PING LOGIC ==================
-local fpsCount = 0
-local lastTime = tick()
-
-RunService.RenderStepped:Connect(function()
-    fpsCount += 1
-    if tick() - lastTime >= 1 then
-        fpsLbl.Text = "FPS: " .. fpsCount
-        fpsCount = 0
-        lastTime = tick()
-    end
-end)
-
-RunService.RenderStepped:Connect(function()
-    local serverStats = Stats.Network.ServerStatsItem
-    local pingObj = serverStats and serverStats:FindFirstChild("Ping")
-    if pingObj then
-        pingLbl.Text = "Ping: " .. math.floor(pingObj.Value) .. " ms"
-    else
-        pingLbl.Text = "Ping: -- ms"
-    end
-end)
-
--- ================== DEFAULT LOAD ==================
-loadMainTab()
-
-print("✅ HamzHub GUI berhasil dimuat! Panel hijau + FPS/Ping work.")
