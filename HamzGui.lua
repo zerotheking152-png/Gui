@@ -5,6 +5,13 @@ local Stats = game:GetService("Stats")
 
 local IMAGE_ID = "rbxassetid://7733658504"
 
+-- ANTI DUPLICATE GUI
+pcall(function()
+    if game.CoreGui:FindFirstChild("HamzHub") then
+        game.CoreGui.HamzHub:Destroy()
+    end
+end)
+
 -- LOADING
 local LoadingGui = Instance.new("ScreenGui", game.CoreGui)
 LoadingGui.IgnoreGuiInset = true
@@ -49,18 +56,22 @@ for i = 1,100 do
     task.wait(0.02)
 end
 
-TweenService:Create(BG, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-for _,v in pairs(BG:GetDescendants()) do
-    if v:IsA("TextLabel") or v:IsA("Frame") then
-        TweenService:Create(v, TweenInfo.new(0.5), {
-            BackgroundTransparency = 1,
+-- FIX LOADING (NO SISA GARIS)
+for _,v in pairs(LoadingGui:GetDescendants()) do
+    if v:IsA("TextLabel") then
+        TweenService:Create(v, TweenInfo.new(0.4), {
             TextTransparency = 1
+        }):Play()
+    elseif v:IsA("Frame") then
+        TweenService:Create(v, TweenInfo.new(0.4), {
+            BackgroundTransparency = 1
         }):Play()
     end
 end
 
-task.wait(0.6)
+task.wait(0.5)
 LoadingGui:Destroy()
+task.wait(0.1)
 
 -- MAIN GUI
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
@@ -114,7 +125,7 @@ Accent.Size = UDim2.new(0,3,0,30)
 Accent.Position = UDim2.new(0,0,0,10)
 Accent.BackgroundColor3 = Color3.fromRGB(0,255,120)
 
--- TAB FUNCTION
+-- TAB SYSTEM
 local function createTab(name, posY)
     local Btn = Instance.new("TextButton", Sidebar)
     Btn.Size = UDim2.new(1,0,0,30)
@@ -245,7 +256,7 @@ task.spawn(function()
     end
 end)
 
--- DRAG
+-- DRAG FUNCTION
 local function makeDraggable(gui, dragHandle)
     dragHandle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
